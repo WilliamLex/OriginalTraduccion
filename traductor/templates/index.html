@@ -1,74 +1,250 @@
-{% load static %}
+ 
+ {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Consulta</title>
-        <!-- Icon -->
-        <link href="{% static 'img/logo.png' %}" rel="shortcut icon" />
-        <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
-        <!-- DataTable.js -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" />
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
-        <!-- Custom CSS -->
-        <link rel="stylesheet" href="{% static 'css/index.css' %}" />
-    </head>
-    <body>
-        <div class="container my-4">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4">
-                    <h1 class="mb-4">Consultar Traducciones</h1>
-                    <form id="frmBusquedaTraduccion" class="row g-3">
-                        <div class="col-sm-12 col-md-6 col-lg-2 col-xl-2">
-                            <select id="cboTipoTraduccion" class="form-select text-center">
-                                <option value="1">Palabra</option>
-                                <option value="2">Expresión</option>
-                                <option value="3" selected>Todos</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
-                            <input type="text" id="txtTexto" class="form-control" placeholder="Ingrese una palabra o expresión" aria-label="Ingrese una palabra o expresión" minlength="1" required />
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2">
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-primary">Consultar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consulta de Traducciones</title>
 
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-4">
-                    <div class="table-responsive">
-                        <table id="datatable-traducciones" class="table">
-                            <caption>
-                                Traductor
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th class="centered">#</th>
-                                    <th class="centered">Tipo</th>
-                                    <th class="centered">Palabra / Expresión</th>
-                                    <th class="centered">Traducción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody_Traducciones"></tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Icon -->
+    <link href="{% static 'img/logo.png' %}" rel="shortcut icon" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+
+    <!-- DataTable.js CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+
+    <style>
+      body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        overflow-x: hidden; 
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(98, 168, 208, 0.8);
+        z-index: -1;
+      }
+
+      header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 0;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      header img {
+        height: 40px;
+        max-width: 100%;
+      }
+
+      header h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+
+      nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline-block;
+        margin-left: 20px;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .container {
+        margin-top: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-select, .form-control {
+    margin-bottom: 10px;
+
+    }
+
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+   }
+
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .table {
+        margin-top: 30px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table-caption {
+        caption-side: top;
+        color: #007bff;
+        font-size: 1.2em;
+    }
+
+    th, td {
+        text-align: center;
+        padding: 12px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .table-responsive {
+        border: 1px solid #d3d3d3;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!-- ... (código previo) ... -->
+
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="container d-flex align-items-center justify-content-between">
+      <img src="{% static 'img/logo.png' %}" alt="Logo" />
+      <h1>Consulta de Traducciones</h1>
+      <nav id="navbar">
+        <ul>
+          <li>
+            <a
+              class="getstarted scrollto"
+            href="https:////www.uteq.edu.ec/es"
+            >UTEQ</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <!-- .navbar -->
+    </div>
+  </header>
+
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-md-8">
+        <form id="frmBusquedaTraduccion" class="row g-3">
+          <!-- Formulario de búsqueda -->
+          <div class="col-md-3">
+            <select id="cboTipoTraduccion" class="form-select">
+              <option value="1">Palabra</option>
+              <option value="2">Expresión</option>
+              <option value="3" selected>Todos</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <input
+              type="text"
+              id="txtTexto"
+              class="form-control"
+              placeholder="Ingrese una palabra o expresión"
+              minlength="1"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <div class="d-grid">
+              <button class="btn btn-primary btn-lg">Consultar</button>
             </div>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table id="datatable-traducciones" class="table">
+            <!-- Tabla de traducciones -->
+            <caption class="text-center table-caption">
+              Traductor
+            </caption>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tipo</th>
+                <th>Palabra / Expresión</th>
+                <th>Traducción</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody_Traducciones"></tbody>
+          </table>
         </div>
-        <!-- Bootstrap -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-        <!-- jQuery -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <!-- DataTable.js -->
-        <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-        <!-- Custom JS -->
-        <script src="{% static 'js/index.js' %}"></script>
-    </body>
+      </div>
+
+      <div class="col-md-4">
+        <img src="{% static 'img/hero-img.png' %}" class="img-fluid animated" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"
+  ></script>
+  <!-- jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- DataTable.js JS -->
+  <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'js/index.js' %}"></script>
+</body>
 </html>
