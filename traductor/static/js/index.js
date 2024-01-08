@@ -8,7 +8,6 @@ const dataTableOptions = {
         { searchable: false, targets: [1, 2, 3] }
     ],
     pageLength: 10,
-    destroy: true,
     language: {
         lengthMenu: "Mostrar _MENU_ traducciones por página",
         zeroRecords: "Ninguna traducción encontrada",
@@ -51,7 +50,7 @@ const buscarTraduccion = async (texto) => {
 
         if (data.mensaje === "exito") {
             document.getElementById("tableBody_Traducciones").innerHTML = ``;
-            
+
             data.traducciones.forEach((traduccion, index) => {
                 const tr = document.createElement("tr");
 
@@ -72,6 +71,20 @@ const buscarTraduccion = async (texto) => {
     }
 };
 
+const speakTranslation = async () => {
+    const textoTraducido = document.getElementById('txtTexto').value;
+    console.log('Texto Traducido:', textoTraducido);
+
+    // Crea una instancia de SpeechSynthesisUtterance
+    const utterance = new SpeechSynthesisUtterance(textoTraducido);
+
+    // Establece el idioma a inglés
+    utterance.lang = 'en-US';
+
+    // Usar la síntesis de voz del navegador
+    window.speechSynthesis.speak(utterance);
+};
+
 const validateInput = () => {
     const texto = String(txtTexto.value).trim();
     return texto.length > 0;
@@ -85,6 +98,8 @@ const initialLoad = () => {
             await initDataTable(String(txtTexto.value).trim());
         }
     });
+
+    document.getElementById('speakButton').addEventListener('click', speakTranslation);
 };
 
 window.addEventListener("load", () => {

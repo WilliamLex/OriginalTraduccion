@@ -21,6 +21,10 @@ class Traduccion(models.Model):
     tipo_traduccion = models.ForeignKey(TipoTraduccion, null=False, blank=False, on_delete=models.CASCADE)
     estado = models.BooleanField(default=True)
 
+     # Nuevo campo para la pronunciación en inglés
+    pronunciacion = models.CharField(max_length=255, null=True, blank=True)
+
+
     def __str__(self) -> str:
         return "{} | {}".format(self.texto, self.texto_traducido)
 
