@@ -24,20 +24,20 @@
           >
         </li>
         <li class="nav-item">
-          <a href="{% url 'tasks' %}" class="nav-link">Traductor</a>
+          <a href="{% url 'tarea' %}" class="nav-link">Traductor</a>
         </li>
         <li class="nav-item">
-          <a href="{% url 'create_task' %}" class="nav-link">Crear tarea</a>
+          <a href="{% url 'crear_tarea' %}" class="nav-link">Crear tarea</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/logout">Cerrar sesión</a>
         </li>
         {% else %}
         <li class="nav-item">
-          <a href="/signin" class="nav-link">Iniciar sesión</a>
+          <a href="/iniciar_sesion" class="nav-link">Iniciar sesión</a>
         </li>
         <li class="nav-item">
-          <a href="/signup" class="nav-link">Registrarse</a>
+          <a href="/registrarse" class="nav-link">Registrarse</a>
         </li>
         {% endif %}
       </ul>

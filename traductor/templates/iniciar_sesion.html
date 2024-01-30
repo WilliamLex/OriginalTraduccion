@@ -82,7 +82,7 @@
         {% if error %}
         <p style="color: red;">{{ error }}</p>
         {% endif %}
-        <form action="/signin/" method="POST">
+        <form action="/iniciar_sesion/" method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="{{ form.username.id_for_label }}">Usuario:</label>

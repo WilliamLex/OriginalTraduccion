@@ -14,6 +14,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Task
 
 from .forms import TaskForm
+from reportlab.pdfgen import canvas
+
 
 # Create your views here.
 
@@ -63,9 +65,9 @@ def obtener_pronunciacion(request):
     else:
         return render(request, 'traduccion.html')
     
-def signup(request):
+def registrarse(request):
     if request.method == 'GET':
-        return render(request, 'signup.html', {"form": UserCreationForm})
+        return render(request, 'registrarse.html', {"form": UserCreationForm()})
     else:
 
         if request.POST["password1"] == request.POST["password2"]:
@@ -74,37 +76,37 @@ def signup(request):
                     request.POST["username"], password=request.POST["password1"])
                 user.save()
                 login(request, user)
-                return redirect('tasks')
+                return redirect('tarea')
             except IntegrityError:
-                return render(request, 'signup.html', {"form": UserCreationForm, "error": "Username already exists."})
+                return render(request, 'registrarse.html', {"form": UserCreationForm, "error": "Username already exists."})
 
-        return render(request, 'signup.html', {"form": UserCreationForm, "error": "Passwords did not match."})
+        return render(request, 'registrarse.html', {"form": UserCreationForm, "error": "Passwords did not match."})
 
 
 @login_required
-def tasks(request):
-    tasks = Task.objects.filter(user=request.user, datecompleted__isnull=True)
-    return render(request, 'tasks.html', {"tasks": tasks})
+def tarea(request):
+    tarea = Task.objects.filter(user=request.user, datecompleted__isnull=True)
+    return render(request, 'tarea.html', {"tarea": tarea})
 
 @login_required
 def tasks_completed(request):
-    tasks = Task.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
-    return render(request, 'tasks.html', {"tasks": tasks})
+    tarea = Task.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    return render(request, 'tarea.html', {"tarea": tarea})
 
 
 @login_required
-def create_task(request):
+def crear_tarea(request):
     if request.method == "GET":
-        return render(request, 'create_task.html', {"form": TaskForm})
+        return render(request, 'crear_tarea.html', {"form": TaskForm})
     else:
         try:
             form = TaskForm(request.POST)
             new_task = form.save(commit=False)
             new_task.user = request.user
             new_task.save()
-            return redirect('tasks')
+            return redirect('tarea')
         except ValueError:
-            return render(request, 'create_task.html', {"form": TaskForm, "error": "Error creating task."})
+            return render(request, 'crear_tarea.html', {"form": TaskForm, "error": "Error creating task."})
 
 
 def index(request):
@@ -117,32 +119,32 @@ def signout(request):
     return redirect('index')
 
 
-def signin(request):
+def iniciar_sesion(request):
     if request.method == 'GET':
-        return render(request, 'signin.html', {"form": AuthenticationForm})
+        return render(request, 'iniciar_sesion.html', {"form": AuthenticationForm})
     else:
         user = authenticate(
             request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            return render(request, 'signin.html', {"form": AuthenticationForm, "error": "Username or password is incorrect."})
+            return render(request, 'iniciar_sesion.html', {"form": AuthenticationForm, "error": "Username or password is incorrect."})
 
         login(request, user)
-        return redirect('tasks')
+        return redirect('tarea')
 
 @login_required
 def task_detail(request, task_id):
     if request.method == 'GET':
         task = get_object_or_404(Task, pk=task_id, user=request.user)
         form = TaskForm(instance=task)
-        return render(request, 'task_detail.html', {'task': task, 'form': form})
+        return render(request, 'detalles_tarea.html', {'tarea': task, 'form': form})
     else:
         try:
             task = get_object_or_404(Task, pk=task_id, user=request.user)
             form = TaskForm(request.POST, instance=task)
             form.save()
-            return redirect('tasks')
+            return redirect('tarea')
         except ValueError:
-            return render(request, 'task_detail.html', {'task': task, 'form': form, 'error': 'Error updating task.'})
+            return render(request, 'detalles_tarea.html', {'tarea': task, 'form': form, 'error': 'Error updating task.'})
 
 @login_required
 def complete_task(request, task_id):
@@ -150,11 +152,61 @@ def complete_task(request, task_id):
     if request.method == 'POST':
         task.datecompleted = timezone.now()
         task.save()
-        return redirect('tasks')
+        return redirect('tarea')
 
 @login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
         task.delete()
-        return redirect('tasks')
+        return redirect('tarea')
+
+
+
+
+
+# Inside the completed_tasks_report view in views.py
+
+def completed_tasks_report(request):
+    completed_tasks = Task.objects.filter(datecompleted__isnull=False)
+
+    # Crear un objeto HttpResponse con el tipo de contenido PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="completed_tasks_report.pdf"'
+
+    # Crear el objeto PDF usando ReportLab
+    p = canvas.Canvas(response)
+    p.drawString(100, 800, "Completed Tasks Report")
+
+    # Iterar sobre las tareas completadas y agregar información al informe
+    for task in completed_tasks:
+        p.drawString(100, 780, f"Title: {task.title}")
+        p.drawString(100, 760, f"Description: {task.description}")
+        p.drawString(100, 740, f"Important: {'Yes' if task.important else 'No'}")
+
+        # Verificar si 'created_at' es el campo correcto para la fecha de creación
+        if hasattr(task, 'created_at'):
+            p.drawString(100, 720, f"Created At: {task.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
+
+        p.drawString(100, 700, "-" * 50)  # Línea separadora entre tareas
+
+    p.showPage()
+    p.save()
+
+    return response
+
+
+@login_required
+def task_detail(request, task_id):
+    if request.method == 'GET':
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        form = TaskForm(instance=task)
+        return render(request, 'detalles_tarea.html', {'tarea': task, 'form': form})
+    elif request.method == 'POST':
+        try:
+            task = get_object_or_404(Task, pk=task_id, user=request.user)
+            form = TaskForm(request.POST, instance=task)
+            form.save()
+            return redirect('tarea')
+        except ValueError:
+            return render(request, 'detalles_tarea.html', {'tarea': task, 'form': form, 'error': 'Error updating task.'})

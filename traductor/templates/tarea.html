@@ -138,6 +138,16 @@
             border-radius: 8px;
             overflow: hidden;
         }
+        body.modo-oscuro {
+            background-color: #333; /* Cambia el color de fondo a un tono oscuro */
+            color: #fff; /* Cambia el color del texto a blanco */
+        }
+        
+        .header.modo-oscuro {
+            background-color: #444; /* Cambia el color de fondo del encabezado a un tono más oscuro */
+            color: #fff; /* Cambia el color del texto del encabezado a blanco */
+        }
+        
         
     </style>
 </head>
@@ -152,7 +162,10 @@
                 <ul>
                     <li>
                         <a class="getstarted scrollto" href="https:////www.uteq.edu.ec/es">UTEQ</a>
+                        <button id="modoOscuroBtn" class="btn btn-dark">Modo Oscuro</button>
+
                     </li>
+                    
                 </ul>
             </nav>
             <!-- .navbar -->
@@ -193,8 +206,7 @@
                 <div class="table-responsive">
                     <table id="datatable-traducciones" class="table">
                         <!-- Tabla de traducciones -->
-                        <caption class="text-center table-caption">Traductor</caption>
-                        <thead>
+                        <thead class="table-dark">
                             <tr>
                                 <th>#</th>
                                 <th>Tipo</th>
@@ -229,18 +241,42 @@
 </body>
 </html>
 <ul>
-  {% for task in tasks %}
+  {% for tarea in tarea %}
   <li>
-    <a href="{% url 'task_detail' task.id %}">
-      {% if task.important %}
-      <strong>{{task.title}}</strong>
-      {% else %} {{task.id}} {{task.title}} {% endif %}
-      <p>{{task.description}}</p>
+    <a href="{% url 'detalles_tarea' tarea.id %}">
+      {% if tarea.important %}
+      <strong>{{tarea.title}}</strong>
+      {% else %} {{task.id}} {{tarea.title}} {% endif %}
+      <p>{{tarea.description}}</p>
 
-      {{task.datecompleted|date:'M j Y:i'}}
+      {{tarea.datecompleted|date:'M j Y:i'}}
     </a>
   </li>
   {% endfor %}
 </ul>
+<script>
+    // Captura el botón de "Modo Oscuro" y el cuerpo del documento
+    const modoOscuroBtn = document.getElementById('modoOscuroBtn');
+    const cuerpoDocumento = document.body;
+
+    // Verifica si hay una configuración almacenada en localStorage
+    const modoOscuroActivado = localStorage.getItem('modoOscuro') === 'activado';
+
+    // Aplica el modo oscuro si estaba activado
+    if (modoOscuroActivado) {
+        cuerpoDocumento.classList.add('modo-oscuro');
+    }
+
+    // Escucha el evento de clic en el botón
+    modoOscuroBtn.addEventListener('click', () => {
+        // Alterna la clase modo-oscuro en el cuerpo del documento
+        cuerpoDocumento.classList.toggle('modo-oscuro');
+
+        // Guarda la configuración en localStorage
+        const modoOscuroNuevo = cuerpoDocumento.classList.contains('modo-oscuro') ? 'activado' : 'desactivado';
+        localStorage.setItem('modoOscuro', modoOscuroNuevo);
+    });
+</script>
+
 
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow p-4">
+        <h1 class="mb-4">Crear Tarea</h1>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="/crear_tarea/" method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Título:</label>
+                {{ form.title }}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Descripción:</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form.important }} {{ form.important.label_tag }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

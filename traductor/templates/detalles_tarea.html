@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{{ tarea.title }}
+
+{{ error }}
+<div class="container my-5">
+  <h1 class="mb-4">Gestión de Tareas</h1>
+
+  <!-- Botón para generar y descargar el informe -->
+  <form action="{% url 'completed_tasks_report' %}" method="post" class="mb-4">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Generar Informe de Tareas Completadas</button>
+  </form>
+
+  <h2>Detalles de Tarea</h2>
+
+  <div class="row">
+      <div class="col-md-4">
+          <div class="card bg-dark text-white mb-4">
+              <img src="{{ tarea.image.url }}" class="card-img-top" alt="{{ tarea.title }}">
+
+              <div class="card-body">
+                  <h3 class="card-title">{{ tarea.title }}</h3>
+                  <p class="card-text">Descripción: {{ tarea.description }}</p>
+                  <p class="card-text">Importante: {% if tarea.important %}Sí{% else %}No{% endif %}</p>
+
+                  <form method="POST">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+
+                      <button type="submit" class="btn btn-primary">
+                          Actualizar
+                      </button>
+                  </form>
+
+                  <form action="{% url 'complete_task' tarea.id %}" method="POST" class="mb-2">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-success">
+                          Completar
+                      </button>
+                  </form>
+
+                  <form action="{% url 'delete_task' tarea.id %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">
+                          Eliminar
+                      </button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}

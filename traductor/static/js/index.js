@@ -71,6 +71,7 @@ const buscarTraduccion = async (texto) => {
     }
 };
 
+
 const speakTranslation = async () => {
     const textoTraducido = document.getElementById('txtTexto').value;
     console.log('Texto Traducido:', textoTraducido);
@@ -88,6 +89,10 @@ const speakTranslation = async () => {
 const validateInput = () => {
     const texto = String(txtTexto.value).trim();
     return texto.length > 0;
+};
+const toggleDarkMode = () => {
+    document.body.classList.toggle('modo-oscuro');
+    
 };
 
 const initialLoad = () => {
