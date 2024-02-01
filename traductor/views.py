@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+import re
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from gtts import gTTS
@@ -210,3 +211,19 @@ def task_detail(request, task_id):
             return redirect('tarea')
         except ValueError:
             return render(request, 'detalles_tarea.html', {'tarea': task, 'form': form, 'error': 'Error updating task.'})
+        
+    
+
+def tu_vista(request):
+    if request.method == 'POST':
+        valor_texto = request.POST.get('txtTexto', '').strip()
+        solo_texto_regex = re.compile(r'^[A-Za-z\s]*$')
+
+        if not solo_texto_regex.match(valor_texto):
+            return HttpResponseBadRequest('Por favor, ingrese solo letras y espacios en blanco.')
+
+        # Resto del manejo del formulario si la validación es exitosa
+        # ...
+
+    # Renderizar la plantilla
+    return render(request, 'tarea.html')

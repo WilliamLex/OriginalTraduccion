@@ -25,6 +25,8 @@ const dataTableOptions = {
     }
 };
 
+
+
 const initDataTable = async (texto) => {
     if (dataTableIsInitialized) {
         dataTable.destroy();
@@ -72,40 +74,67 @@ const buscarTraduccion = async (texto) => {
 };
 
 
+
 const speakTranslation = async () => {
-    const textoTraducido = document.getElementById('txtTexto').value;
+    const textoTraducido = document.getElementById('txtTexto').value.trim();
     console.log('Texto Traducido:', textoTraducido);
 
-    // Crea una instancia de SpeechSynthesisUtterance
-    const utterance = new SpeechSynthesisUtterance(textoTraducido);
+    if (textoTraducido !== '') {
+        // Crea una instancia de SpeechSynthesisUtterance y establece el idioma a inglés
+        const utterance = new SpeechSynthesisUtterance();
+        utterance.text = textoTraducido;
+        utterance.lang = 'en-US';
 
-    // Establece el idioma a inglés
-    utterance.lang = 'en-US';
+        // Usar la síntesis de voz del navegador
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.log('No hay texto traducido disponible.');
+    }
+};
 
-    // Usar la síntesis de voz del navegador
-    window.speechSynthesis.speak(utterance);
+const validarCampoTexto = () => {
+    const campoTexto = document.getElementById('txtTexto');
+    const valorCampo = campoTexto.value.trim();
+
+    // Expresión regular que permite solo letras y espacios en blanco
+    const soloTextoRegex = /^[A-Za-z\s]*$/;
+
+    if (!soloTextoRegex.test(valorCampo)) {
+        alert('Por favor, ingrese solo letras y espacios en blanco en el campo de texto.');
+        campoTexto.value = ''; // Limpiar el campo si no cumple con los requisitos
+        return false;
+    }
+
+    return true;
 };
 
 const validateInput = () => {
-    const texto = String(txtTexto.value).trim();
-    return texto.length > 0;
+    return validarCampoTexto();
 };
-const toggleDarkMode = () => {
-    document.body.classList.toggle('modo-oscuro');
-    
+
+const validarFormulario = () => {
+    if (!validateInput()) {
+        return false; // Cancela el envío del formulario
+    }
+
+    // Resto de las validaciones o acciones del formulario
+
+    return true; // Permite el envío del formulario
 };
 
 const initialLoad = () => {
     frmBusquedaTraduccion.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        if (validateInput()) {
+        if (validarFormulario()) {
             await initDataTable(String(txtTexto.value).trim());
         }
     });
 
     document.getElementById('speakButton').addEventListener('click', speakTranslation);
 };
+
+
 
 window.addEventListener("load", () => {
     initialLoad();
