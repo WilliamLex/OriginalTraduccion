@@ -16,10 +16,11 @@
 
   <h2>Detalles de Tarea</h2>
 
-  <div class="row">
-      <div class="col-md-4">
-          <div class="card bg-dark text-white mb-4">
-              <img src="{{ tarea.image.url }}" class="card-img-top" alt="{{ tarea.title }}">
+  <div class="py-3">
+
+    <div class="card bg-dark text-white mb-4">
+      <div class="row">
+              <alt="{{ tarea.title }}">
 
               <div class="card-body">
                   <h3 class="card-title">{{ tarea.title }}</h3>
@@ -54,5 +55,81 @@
   </div>
 </div>
 
+<script>
+    // Captura el botón de "Modo Oscuro" y el cuerpo del documento
+    const modoOscuroBtn = document.getElementById('modoOscuroBtn');
+    const cuerpoDocumento = document.body;
+
+    // Verifica si hay una configuración almacenada en localStorage
+    const modoOscuroActivado = localStorage.getItem('modoOscuro') === 'activado';
+
+    // Paleta de colores para el modo oscuro
+    const coloresModoOscuro = {
+        backgroundColor: '#333',  // Cambia el color de fondo a un tono oscuro
+        color: '#fff',  // Cambia el color del texto a blanco
+        headerBackgroundColor: '#444',  // Cambia el color de fondo del encabezado a un tono más oscuro
+    };
+
+    // Aplica el modo oscuro si estaba activado
+    if (modoOscuroActivado) {
+        aplicarEstilosModoOscuro();
+    }
+
+    // Escucha el evento de clic en el botón
+    modoOscuroBtn.addEventListener('click', () => {
+        // Alterna la clase modo-oscuro en el cuerpo del documento
+        cuerpoDocumento.classList.toggle('modo-oscuro');
+
+        // Aplica o elimina los estilos del modo oscuro
+        if (cuerpoDocumento.classList.contains('modo-oscuro')) {
+            aplicarEstilosModoOscuro();
+        } else {
+            eliminarEstilosModoOscuro();
+        }
+
+        // Guarda la configuración en localStorage
+        const modoOscuroNuevo = cuerpoDocumento.classList.contains('modo-oscuro') ? 'activado' : 'desactivado';
+        localStorage.setItem('modoOscuro', modoOscuroNuevo);
+    });
+
+    // Función para aplicar los estilos del modo oscuro
+    function aplicarEstilosModoOscuro() {
+        cuerpoDocumento.style.backgroundColor = coloresModoOscuro.backgroundColor;
+        cuerpoDocumento.style.color = coloresModoOscuro.color;
+        // Puedes agregar más estilos según sea necesario
+        // Por ejemplo, cambiar el color de fondo del encabezado
+        document.querySelector('header').style.backgroundColor = coloresModoOscuro.headerBackgroundColor;
+        const formularioBusqueda = document.getElementById('frmBusquedaTraduccion');
+        formularioBusqueda.style.backgroundColor = coloresModoOscuro.backgroundColor;
+        formularioBusqueda.style.color = coloresModoOscuro.color;
+        // Aplica el modo oscuro en otras secciones si es necesario
+        aplicarEstilosModoOscuroCrearTarea();
+    }
+
+    // Función para eliminar los estilos del modo oscuro
+    function eliminarEstilosModoOscuro() {
+        cuerpoDocumento.style.backgroundColor = '';  // Utiliza el valor por defecto
+        cuerpoDocumento.style.color = '';  // Utiliza el valor por defecto
+        // Elimina otros estilos según sea necesario
+        document.querySelector('header').style.backgroundColor = '';  // Utiliza el valor por defecto
+        const formularioBusqueda = document.getElementById('frmBusquedaTraduccion');
+        formularioBusqueda.style.backgroundColor = ''; // Utiliza el valor por defecto
+        formularioBusqueda.style.color = ''; // Utiliza el valor por defecto
+        // Elimina el modo oscuro en otras secciones si es necesario
+        eliminarEstilosModoOscuroCrearTarea();
+    }
+
+    // Función para aplicar el modo oscuro en la sección de crear tarea
+    function aplicarEstilosModoOscuroCrearTarea() {
+        const crearTareaSection = document.querySelector('.card.shadow');
+        crearTareaSection.classList.add('modo-oscuro-crear-tarea');
+    }
+
+    // Función para eliminar el modo oscuro en la sección de crear tarea
+    function eliminarEstilosModoOscuroCrearTarea() {
+        const crearTareaSection = document.querySelector('.card.shadow');
+        crearTareaSection.classList.remove('modo-oscuro-crear-tarea');
+    }
+</script>
 
 {% endblock %}

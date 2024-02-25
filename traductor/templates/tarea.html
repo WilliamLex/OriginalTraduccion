@@ -161,9 +161,9 @@
             <nav id="navbar">
                 <ul>
                     <li>
-                        <a class="getstarted scrollto" href="https:////www.uteq.edu.ec/es">UTEQ</a>
                         <button id="modoOscuroBtn" class="btn btn-dark">Modo Oscuro</button>
-
+                        <a class="getstarted scrollto" href="https://drive.google.com/drive/folders/12kjhwl3Nx5pinR1DIowLUBB5kNovRjCd">
+                            <button class="btn btn-primary">Manual de usuario</button>
                     </li>
                     
                 </ul>
@@ -182,8 +182,8 @@
                     <!-- Formulario de búsqueda -->
                     <div class="col-md-3">
                         <select id="cboTipoTraduccion" class="form-select">
-                            <option value="1">Palabra</option>
-                            <option value="2">Expresión</option>
+                            <option value="1">Expresión</option>
+                            <option value="2">Palabra</option>
                             <option value="3" selected>Todos</option>
                         </select>
                     </div>
@@ -241,20 +241,31 @@
   <script src="{% static 'js/index.js' %}"></script>
 </body>
 </html>
-<ul>
-  {% for tarea in tarea %}
-  <li>
-    <a href="{% url 'detalles_tarea' tarea.id %}">
-      {% if tarea.important %}
-      <strong>{{tarea.title}}</strong>
-      {% else %} {{task.id}} {{tarea.title}} {% endif %}
-      <p>{{tarea.description}}</p>
 
-      {{tarea.datecompleted|date:'M j Y:i'}}
-    </a>
-  </li>
+<div class="row my-4 text-center">
+
+    <h3>Mis Tareas</h3>
+    <p>Tareas realizadas</p>
+      
+  {% for tarea in tarea %}
+  <div class="col-md-4 p-4">
+    <div class="card bg-black card-project">
+        <div class="card-body">
+
+  
+         <a href="{% url 'detalles_tarea' tarea.id %}">
+          {% if tarea.important %}
+          <strong>{{tarea.title}}</strong>
+          {% else %} {{tarea.id}} {{tarea.title}} {% endif %}
+          <p>{{tarea.description}}</p>
+
+          {{tarea.datecompleted|date:'M j Y:i'}}
+         </a>
+        </div>
+    </div>
+  </div>
   {% endfor %}
-</ul>
+</div>
 <script>
     // Captura el botón de "Modo Oscuro" y el cuerpo del documento
     const modoOscuroBtn = document.getElementById('modoOscuroBtn');
@@ -266,8 +277,8 @@
     // Paleta de colores para el modo oscuro
     const coloresModoOscuro = {
         backgroundColor: '#333',  // Cambia el color de fondo a un tono oscuro
-        color: '#fff',  // Cambia el color del texto a blanco
-        headerBackgroundColor: '#444',  // Cambia el color de fondo del encabezado a un tono más oscuro
+        color: '#000',  // Cambia el color del texto a blanco
+        headerBackgroundColor: '#000',  // Cambia el color de fondo del encabezado a un tono más oscuro
     };
 
     // Aplica el modo oscuro si estaba activado
@@ -299,6 +310,10 @@
         // Puedes agregar más estilos según sea necesario
         // Por ejemplo, cambiar el color de fondo del encabezado
         document.querySelector('header').style.backgroundColor = coloresModoOscuro.headerBackgroundColor;
+        const formularioBusqueda = document.getElementById('frmBusquedaTraduccion');
+        formularioBusqueda.style.backgroundColor = coloresModoOscuro.backgroundColor;
+        formularioBusqueda.style.color = coloresModoOscuro.color;
+        
     }
 
     // Función para eliminar los estilos del modo oscuro
@@ -307,6 +322,9 @@
         cuerpoDocumento.style.color = '';  // Utiliza el valor por defecto
         // Elimina otros estilos según sea necesario
         document.querySelector('header').style.backgroundColor = '';  // Utiliza el valor por defecto
+        const formularioBusqueda = document.getElementById('frmBusquedaTraduccion');
+        formularioBusqueda.style.backgroundColor = ''; // Utiliza el valor por defecto
+        formularioBusqueda.style.color = ''; // Utiliza el valor por defecto
     }
 </script>
 

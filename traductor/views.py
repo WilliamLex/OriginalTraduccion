@@ -13,8 +13,9 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from .models import Task
-
+from reportlab.lib.pagesizes import letter
 from .forms import TaskForm
+import textwrap
 from reportlab.pdfgen import canvas
 
 
@@ -166,9 +167,13 @@ def delete_task(request, task_id):
 
 
 
-# Inside the completed_tasks_report view in views.py
+
+
+import textwrap
+from reportlab.lib.pagesizes import letter
 
 def completed_tasks_report(request):
+    # Obtener todas las tareas completadas
     completed_tasks = Task.objects.filter(datecompleted__isnull=False)
 
     # Crear un objeto HttpResponse con el tipo de contenido PDF
@@ -176,25 +181,57 @@ def completed_tasks_report(request):
     response['Content-Disposition'] = 'attachment; filename="completed_tasks_report.pdf"'
 
     # Crear el objeto PDF usando ReportLab
-    p = canvas.Canvas(response)
-    p.drawString(100, 800, "Completed Tasks Report")
+    p = canvas.Canvas(response, pagesize=letter)
+
+    # Definir el tamaño y la posición inicial del texto en la página
+    y = 750
+    text_margin = 50
+
+    # Ajustar el tamaño de la fuente
+    p.setFont("Helvetica", 12)
+
+    # Agregar el título del informe
+    title_text = "Completed Tasks Report"
+    title_width = p.stringWidth(title_text, "Helvetica", 16)
+    p.drawString((letter[0] - title_width) / 2, y, title_text)
+    y -= 30  # Descender una línea
 
     # Iterar sobre las tareas completadas y agregar información al informe
     for task in completed_tasks:
-        p.drawString(100, 780, f"Title: {task.title}")
-        p.drawString(100, 760, f"Description: {task.description}")
-        p.drawString(100, 740, f"Important: {'Yes' if task.important else 'No'}")
+        # Ajustar la posición vertical del texto
+        y -= 20
 
-        # Verificar si 'created_at' es el campo correcto para la fecha de creación
+        # Agregar el título
+        p.drawString(text_margin, y, f"Title: {task.title}")
+
+        # Ajustar la descripción usando word wrapping
+        description_lines = textwrap.wrap(task.description, width=70)  # Ancho máximo de la línea
+        for line in description_lines:
+            y -= 15  # Reducir el espacio vertical entre líneas
+            p.drawString(text_margin, y, f"Description: {line}")
+
+        p.drawString(text_margin, y - 20, f"Important: {'Yes' if task.important else 'No'}")
+
+        # Agregar la fecha de creación si está disponible
         if hasattr(task, 'created_at'):
-            p.drawString(100, 720, f"Created At: {task.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
+            p.drawString(text_margin, y - 35, f"Created At: {task.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
-        p.drawString(100, 700, "-" * 50)  # Línea separadora entre tareas
+        # Separar las entradas de las tareas con una línea
+        p.drawString(text_margin, y - 50, "-" * 50)
+        y -= 60  # Descender a la siguiente sección
 
-    p.showPage()
+        # Cambiar de página si la página actual se ha llenado
+        if y <= 100:
+            p.showPage()
+            p.setFont("Helvetica", 12)
+            p.drawString((letter[0] - title_width) / 2, 750, "Completed Tasks Report (Continued)")
+            y = 750
+
+    # Guardar el PDF y cerrar el objeto Canvas
     p.save()
 
     return response
+
 
 
 @login_required
